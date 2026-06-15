@@ -20,16 +20,16 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Milzblog",
-    default: "Milzblog — Luxury Travel Stories & Guides",
+    template: "%s | Milz on the Move",
+    default: "Milz on the Move — Luxury Travel Stories & Guides",
   },
   description:
     "Immersive destination guides, travel tips, outfit inspiration, and honest travel stories from around the world.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://milzblog.com"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://milzonthemove.com"
   ),
   openGraph: {
-    siteName: "Milzblog",
+    siteName: "Milz on the Move",
     locale: "en_US",
     type: "website",
   },

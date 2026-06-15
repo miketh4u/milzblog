@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Links | milzblog",
+  title: "Links | milz on the move",
   description: "All my links in one place.",
 };
 
@@ -23,7 +23,7 @@ export default function LinksPage() {
           <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "#2c1a0e", margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <span style={{ color: "#c8922a", fontSize: "32px", fontWeight: 700 }}>m</span>
           </div>
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", color: "#2c1a0e", margin: "0 0 6px" }}>milzblog</h1>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "24px", color: "#2c1a0e", margin: "0 0 6px" }}>milz on the move</h1>
           <p style={{ color: "#7a6a5a", fontSize: "14px", margin: 0 }}>Luxury travel stories from around the world</p>
         </div>
 
@@ -54,7 +54,7 @@ export default function LinksPage() {
         </div>
 
         <p style={{ textAlign: "center", color: "#7a6a5a", fontSize: "12px", marginTop: "24px" }}>
-          <Link href="/" style={{ color: "#7a6a5a" }}>milzblog.com</Link>
+          <Link href="/" style={{ color: "#7a6a5a" }}>milz on the move.com</Link>
         </p>
       </div>
     </div>

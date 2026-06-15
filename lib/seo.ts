@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { Post, Country, City } from "@/types";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://milzblog.com";
-const SITE_NAME = "Milzblog";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://milzonthemove.com";
+const SITE_NAME = "Milz on the Move";
 
 export function generatePostMetadata(post: Post): Metadata {
   const title = post.seo?.metaTitle || post.title;
