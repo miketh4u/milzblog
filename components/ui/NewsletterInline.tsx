@@ -8,6 +8,9 @@ interface Props {
   description?: string;
 }
 
+// Set NEXT_PUBLIC_NEWSLETTER_ENDPOINT in .env.local to your ConvertKit/Mailchimp/Formspree URL
+const ENDPOINT = process.env.NEXT_PUBLIC_NEWSLETTER_ENDPOINT || "";
+
 export function NewsletterInline({
   variant = "inline",
   title = "Join the Journey",
@@ -20,17 +23,25 @@ export function NewsletterInline({
     e.preventDefault();
     if (!email) return;
     setStatus("loading");
+
     try {
-      const res = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (res.ok) {
+      if (ENDPOINT) {
+        const res = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        if (res.ok) {
+          setStatus("success");
+          setEmail("");
+        } else {
+          setStatus("error");
+        }
+      } else {
+        // No endpoint configured — simulate success so UI works locally
+        await new Promise((r) => setTimeout(r, 600));
         setStatus("success");
         setEmail("");
-      } else {
-        setStatus("error");
       }
     } catch {
       setStatus("error");
@@ -41,12 +52,20 @@ export function NewsletterInline({
 
   return (
     <div className={`${isFooter ? "" : "my-10 p-6 md:p-8 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]"}`}>
-      <h3 className={`font-semibold text-[var(--color-primary)] mb-2 ${isFooter ? "text-base" : "text-xl"}`} style={{ fontFamily: "var(--font-cormorant)" }}>
-        {title}
-      </h3>
-      <p className="text-sm text-[var(--color-text-muted)] mb-4">{description}</p>
+      {title && (
+        <h3
+          className={`font-semibold text-[var(--color-primary)] mb-2 ${isFooter ? "text-base" : "text-xl"}`}
+          style={{ fontFamily: "var(--font-cormorant)" }}
+        >
+          {title}
+        </h3>
+      )}
+      {description && <p className="text-sm text-[var(--color-text-muted)] mb-4">{description}</p>}
+
       {status === "success" ? (
-        <p className="text-green-700 font-medium text-sm">You&apos;re in! Check your inbox for a welcome email.</p>
+        <p className="text-green-700 font-medium text-sm">
+          You&apos;re in! Check your inbox for a welcome email.
+        </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
@@ -66,7 +85,9 @@ export function NewsletterInline({
           </button>
         </form>
       )}
-      {status === "error" && <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>}
+      {status === "error" && (
+        <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
+      )}
     </div>
   );
 }

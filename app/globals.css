@@ -121,3 +121,12 @@ body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+
+/* Hide scrollbar for Instagram strip */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Fuse from "fuse.js";
 import { PostCard } from "@/components/ui/PostCard";
 import type { PostCard as PostCardType } from "@/types";
