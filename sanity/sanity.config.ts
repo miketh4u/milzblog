@@ -4,9 +4,9 @@ import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./schemas";
 
 export default defineConfig({
-  name: "milzblog",
-  title: "Milzblog CMS",
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  name: "milz-on-the-move",
+  title: "Milz on the Move CMS",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "y5gvvy5f",
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   plugins: [structureTool(), visionTool()],
   schema: { types: schemaTypes },

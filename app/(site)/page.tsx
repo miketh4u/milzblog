@@ -420,7 +420,7 @@ export default function HomePage() {
               </span>
             </div>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/the_milz_/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
