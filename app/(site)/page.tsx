@@ -1,15 +1,76 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NewsletterInline } from "@/components/ui/NewsletterInline";
+import { safeFetch } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import {
-  featuredPosts,
-  destinations,
+  featuredPostsQuery,
+  popularPostsQuery,
+  topCountriesQuery,
+} from "@/sanity/lib/queries";
+import { formatDateShort } from "@/lib/utils";
+import type { PostCard, Country } from "@/types";
+import {
+  featuredPosts as featuredFallback,
+  destinations as destinationsFallback,
   tripTypes,
-  popularPosts,
+  popularPosts as popularFallback,
   instagramPosts,
 } from "@/lib/home-data";
 
-export default function HomePage() {
+export const revalidate = 3600;
+
+type SanityCountryCard = Pick<Country, "_id" | "name" | "slug" | "heroImage"> & {
+  postCount: number;
+};
+
+function mapPostCard(post: PostCard) {
+  const image = post.featuredImage
+    ? urlFor(post.featuredImage).width(1200).height(900).fit("crop").auto("format").url()
+    : "";
+  return {
+    id: post._id,
+    title: post.title,
+    slug: post.slug.current,
+    excerpt: post.excerpt ?? "",
+    image,
+    imageAlt: post.featuredImage?.alt || post.title,
+    category: post.category?.name ?? "",
+    categorySlug: post.category?.slug.current ?? "",
+    date: formatDateShort(post.publishedAt),
+    readingTime: post.readingTime ?? 0,
+    location: post.city?.name || post.country?.name || "",
+  };
+}
+
+function mapCountryCard(country: SanityCountryCard) {
+  const image = country.heroImage
+    ? urlFor(country.heroImage).width(800).height(1200).fit("crop").auto("format").url()
+    : "";
+  return {
+    id: country._id,
+    name: country.name,
+    slug: country.slug.current,
+    image,
+    imageAlt: country.heroImage?.alt || country.name,
+    postCount: country.postCount,
+  };
+}
+
+export default async function HomePage() {
+  const [sanityFeatured, sanityPopular, sanityCountries] = await Promise.all([
+    safeFetch<PostCard[]>(featuredPostsQuery, {}, []),
+    safeFetch<PostCard[]>(popularPostsQuery, {}, []),
+    safeFetch<SanityCountryCard[]>(topCountriesQuery, {}, []),
+  ]);
+
+  const featuredPosts =
+    sanityFeatured.length >= 3 ? sanityFeatured.slice(0, 3).map(mapPostCard) : featuredFallback;
+  const popularPosts =
+    sanityPopular.length >= 3 ? sanityPopular.slice(0, 3).map(mapPostCard) : popularFallback;
+  const destinations =
+    sanityCountries.length >= 4 ? sanityCountries.map(mapCountryCard) : destinationsFallback;
+
   return (
     <>
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}

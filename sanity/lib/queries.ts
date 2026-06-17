@@ -139,3 +139,13 @@ export const popularPostsQuery = groq`
     ${postCardFields}
   }
 `;
+
+export const topCountriesQuery = groq`
+  *[_type == "country"] {
+    _id,
+    name,
+    slug,
+    heroImage { asset, alt, hotspot, crop },
+    "postCount": count(*[_type == "post" && references(^._id)])
+  } | order(postCount desc) [0...4]
+`;
