@@ -76,10 +76,10 @@ export default async function HomePage() {
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative min-h-[92vh] md:min-h-screen flex items-end overflow-hidden">
         <Image
-          src="/images/home/travel-blog-homepage-hero.png"
-          alt="Stylized illustration of rolling tan and green hills under a cream sky with a sun and flock of birds"
+          src="/images/home/home-page-hero.jpg"
+          alt="Smiling traveller in a yellow outfit and sunglasses sitting on warm-toned sand against a stylized sun and cream sky"
           fill
-          className="object-cover object-bottom"
+          className="object-cover object-center"
           priority
           sizes="100vw"
         />
