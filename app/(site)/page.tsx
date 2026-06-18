@@ -76,15 +76,15 @@ export default async function HomePage() {
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative min-h-[92vh] md:min-h-screen flex items-end overflow-hidden">
         <Image
-          src="/images/home/humphrey-m-e6dRLBx6Kg8-unsplash.jpg"
-          alt="Aerial view of the turquoise waters and white sand beach in Zanzibar"
+          src="/images/home/travel-blog-homepage-hero.png"
+          alt="Stylized illustration of rolling tan and green hills under a cream sky with a sun and flock of birds"
           fill
-          className="object-cover object-center"
+          className="object-cover object-bottom"
           priority
           sizes="100vw"
         />
-        {/* gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+        {/* gradient overlay — darken the bottom for copy legibility, leave sky/sun clear at top */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2c1a0e]/85 via-[#2c1a0e]/35 to-transparent" />
 
         {/* content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 md:pb-24">
