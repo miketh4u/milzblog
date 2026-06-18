@@ -89,13 +89,6 @@ export default async function HomePage() {
         {/* content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 md:pb-24">
           <div className="max-w-xl">
-            <span className="inline-block text-[var(--color-accent)] text-xs font-semibold uppercase tracking-[0.25em] mb-4">
-              Explore · Style · Discover
-            </span>
-            <p className="text-white/75 text-base md:text-lg leading-relaxed mb-8 max-w-sm">
-              Honest destination guides, travel tips, and outfit inspo for the
-              woman who moves through the world boldly.
-            </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/destinations"
