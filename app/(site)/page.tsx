@@ -92,12 +92,6 @@ export default async function HomePage() {
             <span className="inline-block text-[var(--color-accent)] text-xs font-semibold uppercase tracking-[0.25em] mb-4">
               Explore · Style · Discover
             </span>
-            <h1
-              className="text-[clamp(2.8rem,8vw,5.5rem)] font-semibold text-white leading-[1.05] mb-5"
-              style={{ fontFamily: "var(--font-cormorant)" }}
-            >
-              The World Is&nbsp;Yours — Go Get&nbsp;It
-            </h1>
             <p className="text-white/75 text-base md:text-lg leading-relaxed mb-8 max-w-sm">
               Honest destination guides, travel tips, and outfit inspo for the
               woman who moves through the world boldly.
