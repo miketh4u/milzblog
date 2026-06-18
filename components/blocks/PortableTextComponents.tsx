@@ -5,23 +5,45 @@ import { VideoEmbed } from "./VideoEmbed";
 import { PullQuote } from "./PullQuote";
 import { AffiliateWidget } from "../ui/AffiliateWidget";
 
+type SanityImageValue = {
+  asset?: { _ref?: string };
+  alt?: string;
+  caption?: string;
+  crop?: { top?: number; bottom?: number; left?: number; right?: number };
+};
+
+function getDisplayDimensions(value: SanityImageValue): { width: number; height: number } | null {
+  const ref = value?.asset?._ref;
+  if (!ref) return null;
+  const match = ref.match(/-(\d+)x(\d+)-/);
+  if (!match) return null;
+  let width = parseInt(match[1], 10);
+  let height = parseInt(match[2], 10);
+  const crop = value.crop;
+  if (crop) {
+    width = width * (1 - (crop.left ?? 0) - (crop.right ?? 0));
+    height = height * (1 - (crop.top ?? 0) - (crop.bottom ?? 0));
+  }
+  return { width: Math.round(width), height: Math.round(height) };
+}
+
 export const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset?._ref) return null;
-      const imageUrl = urlFor(value).width(1200).auto("format").url();
+      const dims = getDisplayDimensions(value);
+      const imageUrl = urlFor(value).width(1600).auto("format").url();
       return (
-        <figure className="my-8 group relative">
-          <div className="relative aspect-[3/2] overflow-hidden rounded-xl">
-            <Image
-              src={imageUrl}
-              alt={value.alt || ""}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 800px"
-              data-pin-description={value.alt || value.caption || ""}
-            />
-          </div>
+        <figure className="my-8">
+          <Image
+            src={imageUrl}
+            alt={value.alt || ""}
+            width={dims?.width ?? 1600}
+            height={dims?.height ?? 1067}
+            className="w-full h-auto rounded-xl"
+            sizes="(max-width: 768px) 100vw, 800px"
+            data-pin-description={value.alt || value.caption || ""}
+          />
           {value.caption && (
             <figcaption className="text-center text-sm text-[var(--color-text-muted)] mt-3 italic">
               {value.caption}
