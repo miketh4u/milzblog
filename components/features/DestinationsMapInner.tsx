@@ -10,6 +10,7 @@ export type MapCountry = {
   slug: { current: string };
   postCount: number;
   mapCoordinates: { lat: number; lng: number };
+  heroUrl?: string | null;
 };
 
 const GEO_URL =
@@ -26,7 +27,7 @@ export default function DestinationsMapInner({
   const [hovered, setHovered] = useState<MapCountry | null>(null);
 
   return (
-    <div className={`${className ?? ""} relative bg-[#f7efe1]`}>
+    <div className={`${className ?? ""} relative bg-[#f3e7d0]`}>
       <ComposableMap
         projection="geoEqualEarth"
         projectionConfig={{ scale: 175, center: [10, 10] }}
@@ -40,44 +41,64 @@ export default function DestinationsMapInner({
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                fill="#ead9bd"
-                stroke="#d4bf9b"
-                strokeWidth={0.4}
+                fill="#d4b885"
+                stroke="#b89a66"
+                strokeWidth={0.5}
                 style={{
                   default: { outline: "none" },
-                  hover: { outline: "none", fill: "#e0cba5" },
+                  hover: { outline: "none", fill: "#c9a96b" },
                   pressed: { outline: "none" },
                 }}
               />
             ))
           }
         </Geographies>
-        {countries.map((country) => (
-          <Marker
-            key={country._id}
-            coordinates={[country.mapCoordinates.lng, country.mapCoordinates.lat]}
-            onClick={() => router.push(`/destinations/${country.slug.current}`)}
-            onMouseEnter={() => setHovered(country)}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              default: { cursor: "pointer" },
-              hover: { cursor: "pointer" },
-              pressed: { cursor: "pointer" },
-            }}
-          >
-            <circle
-              r={8}
-              fill="var(--color-accent, #c2410c)"
-              fillOpacity={0.2}
-            />
-            <circle
-              r={4.5}
-              fill="var(--color-accent, #c2410c)"
-              stroke="#fff"
-              strokeWidth={1.5}
-            />
-          </Marker>
-        ))}
+        {countries.map((country) => {
+          const clipId = `map-clip-${country._id}`;
+          const radius = 16;
+          const innerRadius = radius - 2;
+          return (
+            <Marker
+              key={country._id}
+              coordinates={[country.mapCoordinates.lng, country.mapCoordinates.lat]}
+              onClick={() => router.push(`/destinations/${country.slug.current}`)}
+              onMouseEnter={() => setHovered(country)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                default: { cursor: "pointer" },
+                hover: { cursor: "pointer" },
+                pressed: { cursor: "pointer" },
+              }}
+            >
+              <defs>
+                <clipPath id={clipId}>
+                  <circle r={innerRadius} />
+                </clipPath>
+              </defs>
+              {/* outer ring + shadow */}
+              <circle
+                r={radius}
+                fill="#fff"
+                stroke="var(--color-accent, #c2410c)"
+                strokeWidth={2}
+                style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))" }}
+              />
+              {country.heroUrl ? (
+                <image
+                  href={country.heroUrl}
+                  x={-innerRadius}
+                  y={-innerRadius}
+                  width={innerRadius * 2}
+                  height={innerRadius * 2}
+                  clipPath={`url(#${clipId})`}
+                  preserveAspectRatio="xMidYMid slice"
+                />
+              ) : (
+                <circle r={innerRadius} fill="var(--color-accent, #c2410c)" />
+              )}
+            </Marker>
+          );
+        })}
       </ComposableMap>
 
       {hovered && (

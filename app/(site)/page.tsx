@@ -11,7 +11,9 @@ import {
 } from "@/sanity/lib/queries";
 import { DestinationsMap, type MapCountry } from "@/components/features/DestinationsMap";
 import { formatDateShort } from "@/lib/utils";
-import type { PostCard, Country } from "@/types";
+import type { PostCard, Country, SanityImage } from "@/types";
+
+type MapCountryRaw = Omit<MapCountry, "heroUrl"> & { heroImage?: SanityImage };
 import {
   featuredPosts as featuredFallback,
   tripTypes,
@@ -59,12 +61,19 @@ function mapCountryCard(country: SanityCountryCard) {
 }
 
 export default async function HomePage() {
-  const [sanityFeatured, sanityPopular, sanityCountries, mapCountries] = await Promise.all([
+  const [sanityFeatured, sanityPopular, sanityCountries, mapCountriesRaw] = await Promise.all([
     safeFetch<PostCard[]>(featuredPostsQuery, {}, []),
     safeFetch<PostCard[]>(popularPostsQuery, {}, []),
     safeFetch<SanityCountryCard[]>(topCountriesQuery, {}, []),
-    safeFetch<MapCountry[]>(mapCountriesQuery, {}, []),
+    safeFetch<MapCountryRaw[]>(mapCountriesQuery, {}, []),
   ]);
+
+  const mapCountries: MapCountry[] = mapCountriesRaw.map(({ heroImage, ...rest }) => ({
+    ...rest,
+    heroUrl: heroImage
+      ? urlFor(heroImage).width(96).height(96).fit("crop").auto("format").url()
+      : null,
+  }));
 
   const featuredPosts =
     sanityFeatured.length >= 3 ? sanityFeatured.slice(0, 3).map(mapPostCard) : featuredFallback;

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { safeFetch } from "@/sanity/lib/client";
 import { allCountriesQuery, mapCountriesQuery } from "@/sanity/lib/queries";
+import { urlFor } from "@/sanity/lib/image";
 import { DestinationCard } from "@/components/ui/DestinationCard";
 import { DestinationsMap, type MapCountry } from "@/components/features/DestinationsMap";
-import type { Country } from "@/types";
+import type { Country, SanityImage } from "@/types";
+
+type MapCountryRaw = Omit<MapCountry, "heroUrl"> & { heroImage?: SanityImage };
 
 export const revalidate = 3600;
 
@@ -15,10 +18,17 @@ export const metadata: Metadata = {
 const REGIONS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Middle East"];
 
 export default async function DestinationsPage() {
-  const [countries, mapCountries] = await Promise.all([
+  const [countries, mapCountriesRaw] = await Promise.all([
     safeFetch<(Country & { postCount: number })[]>(allCountriesQuery, {}, []),
-    safeFetch<MapCountry[]>(mapCountriesQuery, {}, []),
+    safeFetch<MapCountryRaw[]>(mapCountriesQuery, {}, []),
   ]);
+
+  const mapCountries: MapCountry[] = mapCountriesRaw.map(({ heroImage, ...rest }) => ({
+    ...rest,
+    heroUrl: heroImage
+      ? urlFor(heroImage).width(96).height(96).fit("crop").auto("format").url()
+      : null,
+  }));
 
   const regionGroups = REGIONS.map((region) => ({
     region,

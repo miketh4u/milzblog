@@ -156,6 +156,7 @@ export const mapCountriesQuery = groq`
     name,
     slug,
     region,
+    heroImage { asset, alt, hotspot, crop },
     mapCoordinates,
     "postCount": count(*[_type == "post" && references(^._id)])
   }
