@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { safeFetch } from "@/sanity/lib/client";
-import { allCountriesQuery } from "@/sanity/lib/queries";
+import { allCountriesQuery, mapCountriesQuery } from "@/sanity/lib/queries";
 import { DestinationCard } from "@/components/ui/DestinationCard";
+import { DestinationsMap, type MapCountry } from "@/components/features/DestinationsMap";
 import type { Country } from "@/types";
 
 export const revalidate = 3600;
@@ -14,7 +15,10 @@ export const metadata: Metadata = {
 const REGIONS = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Middle East"];
 
 export default async function DestinationsPage() {
-  const countries = await safeFetch<(Country & { postCount: number })[]>(allCountriesQuery, {}, []);
+  const [countries, mapCountries] = await Promise.all([
+    safeFetch<(Country & { postCount: number })[]>(allCountriesQuery, {}, []),
+    safeFetch<MapCountry[]>(mapCountriesQuery, {}, []),
+  ]);
 
   const regionGroups = REGIONS.map((region) => ({
     region,
@@ -33,6 +37,19 @@ export default async function DestinationsPage() {
           Every country tells a different story. Find yours.
         </p>
       </div>
+
+      {/* Interactive map */}
+      {mapCountries.length > 0 && (
+        <div className="mb-16">
+          <DestinationsMap
+            countries={mapCountries}
+            className="w-full h-[380px] md:h-[520px] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm"
+          />
+          <p className="text-center text-[var(--color-text-muted)] text-xs mt-3">
+            Tap a pin to open the country page.
+          </p>
+        </div>
+      )}
 
       {/* Region groups */}
       {regionGroups.map(({ region, countries: regionCountries }) => (

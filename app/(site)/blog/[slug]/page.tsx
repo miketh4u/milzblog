@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { safeFetch } from "@/sanity/lib/client";
 import { postBySlugQuery, relatedPostsQuery } from "@/sanity/lib/queries";
@@ -70,8 +71,28 @@ export default async function BlogPostPage({ params }: Props) {
             <div className="flex flex-wrap items-center gap-3 text-white/70 text-sm">
               <span>{formatDate(post.publishedAt)}</span>
               {post.readingTime && <><span>·</span><span>{post.readingTime} min read</span></>}
-              {post.country && <><span>·</span><span>{post.country.name}</span></>}
-              {post.city && <><span>·</span><span>{post.city.name}</span></>}
+              {post.country && (
+                <>
+                  <span>·</span>
+                  <Link
+                    href={`/destinations/${post.country.slug.current}`}
+                    className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                  >
+                    {post.country.name}
+                  </Link>
+                </>
+              )}
+              {post.city && post.country && (
+                <>
+                  <span>·</span>
+                  <Link
+                    href={`/destinations/${post.country.slug.current}/${post.city.slug.current}`}
+                    className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                  >
+                    {post.city.name}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -5,14 +5,15 @@ import { safeFetch } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import {
   featuredPostsQuery,
+  mapCountriesQuery,
   popularPostsQuery,
   topCountriesQuery,
 } from "@/sanity/lib/queries";
+import { DestinationsMap, type MapCountry } from "@/components/features/DestinationsMap";
 import { formatDateShort } from "@/lib/utils";
 import type { PostCard, Country } from "@/types";
 import {
   featuredPosts as featuredFallback,
-  destinations as destinationsFallback,
   tripTypes,
   popularPosts as popularFallback,
   instagramPosts,
@@ -58,18 +59,18 @@ function mapCountryCard(country: SanityCountryCard) {
 }
 
 export default async function HomePage() {
-  const [sanityFeatured, sanityPopular, sanityCountries] = await Promise.all([
+  const [sanityFeatured, sanityPopular, sanityCountries, mapCountries] = await Promise.all([
     safeFetch<PostCard[]>(featuredPostsQuery, {}, []),
     safeFetch<PostCard[]>(popularPostsQuery, {}, []),
     safeFetch<SanityCountryCard[]>(topCountriesQuery, {}, []),
+    safeFetch<MapCountry[]>(mapCountriesQuery, {}, []),
   ]);
 
   const featuredPosts =
     sanityFeatured.length >= 3 ? sanityFeatured.slice(0, 3).map(mapPostCard) : featuredFallback;
   const popularPosts =
     sanityPopular.length >= 3 ? sanityPopular.slice(0, 3).map(mapPostCard) : popularFallback;
-  const destinations =
-    sanityCountries.length >= 4 ? sanityCountries.map(mapCountryCard) : destinationsFallback;
+  const destinations = sanityCountries.map(mapCountryCard);
 
   return (
     <>
@@ -234,6 +235,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── DESTINATIONS ─────────────────────────────────────────────────── */}
+      {destinations.length > 0 && (
       <section className="bg-[var(--color-surface)] border-y border-[var(--color-border)] py-14 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-8 md:mb-12">
@@ -291,6 +293,31 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      )}
+
+      {/* ─── MAP ──────────────────────────────────────────────────────────── */}
+      {mapCountries.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24">
+          <div className="text-center mb-8 md:mb-12">
+            <p className="text-[var(--color-accent)] text-[11px] font-semibold uppercase tracking-[0.25em] mb-2">
+              Where I&apos;ve Been
+            </p>
+            <h2
+              className="text-[clamp(2rem,4vw,2.75rem)] font-semibold text-[var(--color-primary)] leading-tight"
+              style={{ fontFamily: "var(--font-cormorant)" }}
+            >
+              Explore by Map
+            </h2>
+            <p className="text-[var(--color-text-muted)] mt-3 max-w-md mx-auto text-sm">
+              Tap a pin to dive into stories from that country.
+            </p>
+          </div>
+          <DestinationsMap
+            countries={mapCountries}
+            className="w-full h-[420px] md:h-[560px] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm"
+          />
+        </section>
+      )}
 
       {/* ─── TRIP TYPES (Bucket List Tiles) ───────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24">

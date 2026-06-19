@@ -149,3 +149,14 @@ export const topCountriesQuery = groq`
     "postCount": count(*[_type == "post" && references(^._id)])
   } | order(postCount desc) [0...4]
 `;
+
+export const mapCountriesQuery = groq`
+  *[_type == "country" && defined(mapCoordinates.lat) && defined(mapCoordinates.lng)] {
+    _id,
+    name,
+    slug,
+    region,
+    mapCoordinates,
+    "postCount": count(*[_type == "post" && references(^._id)])
+  }
+`;
