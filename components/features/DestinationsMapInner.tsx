@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
@@ -25,15 +25,32 @@ export default function DestinationsMapInner({
 }) {
   const router = useRouter();
   const [hovered, setHovered] = useState<MapCountry | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Markers live in SVG viewBox units and shrink with the map on small
+  // screens; counter-scale them so they keep a constant on-screen size.
+  const [markerScale, setMarkerScale] = useState(1);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      if (w > 0) setMarkerScale(Math.min(2.2, Math.max(0.9, 980 / w)));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   return (
-    <div className={`${className ?? ""} relative bg-[#f3e7d0]`}>
+    <div ref={containerRef} className={`${className ?? ""} relative`}>
       <ComposableMap
         projection="geoEqualEarth"
         projectionConfig={{ scale: 175, center: [10, 10] }}
         width={980}
         height={520}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "auto" }}
       >
         <Geographies geography={GEO_URL}>
           {({ geographies }) =>
@@ -55,7 +72,7 @@ export default function DestinationsMapInner({
         </Geographies>
         {countries.map((country) => {
           const clipId = `map-clip-${country._id}`;
-          const radius = 16;
+          const radius = 20;
           const innerRadius = radius - 2;
           return (
             <Marker
@@ -70,32 +87,34 @@ export default function DestinationsMapInner({
                 pressed: { cursor: "pointer" },
               }}
             >
-              <defs>
-                <clipPath id={clipId}>
-                  <circle r={innerRadius} />
-                </clipPath>
-              </defs>
-              {/* outer ring + shadow */}
-              <circle
-                r={radius}
-                fill="#fff"
-                stroke="var(--color-accent, #c2410c)"
-                strokeWidth={2}
-                style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))" }}
-              />
-              {country.heroUrl ? (
-                <image
-                  href={country.heroUrl}
-                  x={-innerRadius}
-                  y={-innerRadius}
-                  width={innerRadius * 2}
-                  height={innerRadius * 2}
-                  clipPath={`url(#${clipId})`}
-                  preserveAspectRatio="xMidYMid slice"
+              <g transform={`scale(${markerScale})`}>
+                <defs>
+                  <clipPath id={clipId}>
+                    <circle r={innerRadius} />
+                  </clipPath>
+                </defs>
+                {/* outer ring + shadow */}
+                <circle
+                  r={radius}
+                  fill="#fff"
+                  stroke="var(--color-accent, #c2410c)"
+                  strokeWidth={2}
+                  style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))" }}
                 />
-              ) : (
-                <circle r={innerRadius} fill="var(--color-accent, #c2410c)" />
-              )}
+                {country.heroUrl ? (
+                  <image
+                    href={country.heroUrl}
+                    x={-innerRadius}
+                    y={-innerRadius}
+                    width={innerRadius * 2}
+                    height={innerRadius * 2}
+                    clipPath={`url(#${clipId})`}
+                    preserveAspectRatio="xMidYMid slice"
+                  />
+                ) : (
+                  <circle r={innerRadius} fill="var(--color-accent, #c2410c)" />
+                )}
+              </g>
             </Marker>
           );
         })}

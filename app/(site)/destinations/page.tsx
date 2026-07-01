@@ -53,7 +53,7 @@ export default async function DestinationsPage() {
         <div className="mb-16">
           <DestinationsMap
             countries={mapCountries}
-            className="w-full h-[380px] md:h-[520px] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm"
+            className="w-full"
           />
           <p className="text-center text-[var(--color-text-muted)] text-xs mt-3">
             Tap a pin to open the country page.

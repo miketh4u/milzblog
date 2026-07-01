@@ -323,7 +323,7 @@ export default async function HomePage() {
           </div>
           <DestinationsMap
             countries={mapCountries}
-            className="w-full h-[420px] md:h-[560px] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm"
+            className="w-full"
           />
         </section>
       )}
