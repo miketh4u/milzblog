@@ -86,7 +86,7 @@ export default async function HomePage() {
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative min-h-[92vh] md:min-h-screen flex items-end overflow-hidden">
         <Image
-          src="/images/home/home-page-hero-mobile.jpg"
+          src="/images/home/home-page-hero-mobile-9x16.jpg"
           alt="Smiling traveller in a yellow outfit and sunglasses sitting on warm-toned sand against a stylized sun and cream sky"
           fill
           className="object-cover object-center md:hidden"
