@@ -89,7 +89,7 @@ export default async function HomePage() {
           src="/images/home/home-page-hero-mobile-9x16.jpg"
           alt="Smiling traveller in a yellow outfit and sunglasses sitting on warm-toned sand against a stylized sun and cream sky"
           fill
-          className="object-cover object-center md:hidden"
+          className="object-cover md:hidden"
           priority
           sizes="100vw"
         />
@@ -101,8 +101,10 @@ export default async function HomePage() {
           priority
           sizes="100vw"
         />
-        {/* gradient overlay — darken the bottom for copy legibility, leave sky/sun clear at top */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2c1a0e]/85 via-[#2c1a0e]/35 to-transparent" />
+        {/* gradient overlay — the desktop photo needs deep darkening for copy legibility;
+            the mobile artwork has its own contrast, so only a light strip behind the buttons */}
+        <div className="absolute inset-0 hidden md:block bg-gradient-to-t from-[#2c1a0e]/85 via-[#2c1a0e]/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-52 md:hidden bg-gradient-to-t from-[#2c1a0e]/55 to-transparent" />
 
         {/* content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 md:pb-24">
