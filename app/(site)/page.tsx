@@ -84,9 +84,9 @@ export default async function HomePage() {
   return (
     <>
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[92vh] md:min-h-screen flex items-end overflow-hidden">
+      <section className="relative aspect-[9/11] md:aspect-auto md:min-h-screen flex items-end overflow-hidden">
         <Image
-          src="/images/home/home-page-hero-mobile-9x16.jpg"
+          src="/images/home/home-page-hero-mobile-crop.jpg"
           alt="Smiling traveller in a yellow outfit and sunglasses sitting on warm-toned sand against a stylized sun and cream sky"
           fill
           className="object-cover md:hidden"
