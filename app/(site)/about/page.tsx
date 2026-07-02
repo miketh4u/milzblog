@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { NewsletterInline } from "@/components/ui/NewsletterInline";
 
@@ -17,12 +18,15 @@ export default function AboutPage() {
         </h1>
       </div>
 
-      {/* Hero image placeholder */}
-      <div className="relative aspect-[16/9] bg-gradient-to-br from-amber-800 to-stone-700 rounded-3xl mb-12 overflow-hidden">
-        <div className="absolute inset-0 flex items-end p-8">
-          <p className="text-white/60 text-sm italic">Your photo here</p>
-        </div>
-      </div>
+      <Image
+        src="/images/about/about-portrait.jpg"
+        alt="Standing in a plant-filled café in a floral two-piece outfit, sunglasses on, pink bow heels on the tiled floor"
+        width={1440}
+        height={1920}
+        className="w-full h-auto rounded-3xl mb-12"
+        sizes="(min-width: 768px) 768px, 100vw"
+        priority
+      />
 
       <div className="article-body space-y-6 text-base leading-relaxed text-[var(--color-text-primary)]">
         <p className="text-xl text-[var(--color-text-muted)] leading-relaxed">
