@@ -50,6 +50,13 @@ export const postBySlugQuery = groq`
   }
 `;
 
+export const adjacentPostsQuery = groq`
+  {
+    "prev": *[_type == "post" && publishedAt < $publishedAt] | order(publishedAt desc) [0] { title, slug },
+    "next": *[_type == "post" && publishedAt > $publishedAt] | order(publishedAt asc) [0] { title, slug }
+  }
+`;
+
 export const relatedPostsQuery = groq`
   *[_type == "post" && slug.current != $slug && (
     country._ref == $countryId || category._ref == $categoryId

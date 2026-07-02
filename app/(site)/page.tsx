@@ -104,6 +104,11 @@ export default async function HomePage() {
         {/* gradient overlay — the desktop photo needs deep darkening for copy legibility;
             the mobile artwork has its own contrast, so only a light strip behind the buttons */}
         <div className="absolute inset-0 hidden md:block bg-gradient-to-t from-[#2c1a0e]/85 via-[#2c1a0e]/35 to-transparent" />
+        {/* second scrim behind the text block only, for copy legibility on busy photo areas */}
+        <div
+          className="absolute inset-0 hidden md:block"
+          style={{ background: "linear-gradient(to top, rgba(26,18,12,.62), rgba(26,18,12,.28) 40%, transparent 68%)" }}
+        />
         <div className="absolute inset-x-0 bottom-0 h-52 md:hidden bg-gradient-to-t from-[#2c1a0e]/55 to-transparent" />
 
         {/* content */}
@@ -132,6 +137,29 @@ export default async function HomePage() {
           <div className="w-px h-8 bg-white/30" />
         </div>
       </section>
+
+      {/* ─── CATEGORY STRIP ───────────────────────────────────────────────── */}
+      <nav aria-label="Browse by category" className="border-b border-[var(--color-border)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[18px] flex items-center flex-wrap gap-2.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-text-muted)] mr-1.5">
+            Browse
+          </span>
+          {[
+            { label: "Destinations", href: "/destinations" },
+            { label: "Travel Tips", href: "/travel-tips" },
+            { label: "Travel News", href: "/travel-news" },
+            { label: "Travel Outfits", href: "/travel-outfits" },
+          ].map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              className="text-[13px] font-medium text-[var(--color-text-primary)] border border-[var(--color-border)] rounded-full px-4 py-[7px] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface)] transition-colors duration-200"
+            >
+              {c.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
 
       {/* ─── FEATURED POSTS ───────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-24">
@@ -184,7 +212,7 @@ export default async function HomePage() {
               >
                 {featuredPosts[0].title}
               </h3>
-              <p className="text-white/65 text-sm line-clamp-2 mb-3">
+              <p className="text-white/65 text-sm line-clamp-2 mb-3 overflow-hidden transition-all duration-[350ms] ease-out [@media(hover:hover)]:max-h-0 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:mb-0 [@media(hover:hover)]:group-hover:max-h-16 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-hover:mb-3">
                 {featuredPosts[0].excerpt}
               </p>
               <div className="flex items-center gap-2 text-white/50 text-xs">
@@ -222,6 +250,11 @@ export default async function HomePage() {
                 >
                   {post.title}
                 </h3>
+                {post.excerpt && (
+                  <p className="text-white/65 text-sm line-clamp-2 mb-2 overflow-hidden transition-all duration-[350ms] ease-out [@media(hover:hover)]:max-h-0 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:mb-0 [@media(hover:hover)]:group-hover:max-h-16 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-hover:mb-2">
+                    {post.excerpt}
+                  </p>
+                )}
                 <div className="flex items-center gap-2 text-white/50 text-xs">
                   <span>{post.date}</span>
                   <span>·</span>
@@ -379,11 +412,19 @@ export default async function HomePage() {
 
       {/* ─── NEWSLETTER ───────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-[var(--color-primary)] py-16 md:py-24 px-4">
-        {/* decorative blob */}
-        <div
-          className="pointer-events-none absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-10"
-          style={{ background: "var(--color-accent)" }}
-        />
+        {/* brand motif: sun + gull line-work echoing the hero illustration */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 130"
+          className="pointer-events-none absolute top-7 right-9 w-[200px] opacity-[0.18] text-[var(--color-accent)]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        >
+          <circle cx="140" cy="62" r="34" />
+          <path d="M18 38c6-9 16-9 22 0M46 22c6-9 16-9 22 0M34 60c6-9 16-9 22 0" />
+        </svg>
         <div className="relative z-10 max-w-xl mx-auto text-center">
           <p className="text-[var(--color-accent)] text-[11px] font-semibold uppercase tracking-[0.25em] mb-3">
             Stay Inspired
@@ -427,7 +468,7 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-7">
           {popularPosts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`} className="group">
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block transition-transform duration-300 hover:-translate-y-1">
               <div className="relative overflow-hidden rounded-2xl aspect-[3/2] mb-4">
                 <Image
                   src={post.image}
@@ -501,8 +542,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── INSTAGRAM STRIP ──────────────────────────────────────────────── */}
-      <section className="border-t border-[var(--color-border)] py-12 md:py-16">
+      {/* ─── INSTAGRAM STRIP (full-bleed grid at md+) ─────────────────────── */}
+      <section className="border-t border-[var(--color-border)] pt-12 md:pt-16 pb-12 md:pb-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6 md:mb-8">
             <div className="flex items-center gap-3">
@@ -522,17 +563,18 @@ export default async function HomePage() {
               Follow on Instagram →
             </a>
           </div>
+        </div>
 
-          {/* 6-col scrollable strip on mobile, grid on desktop */}
-          <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 md:overflow-visible md:grid md:grid-cols-6 scrollbar-none">
-            {instagramPosts.map((post) => (
-              <a
-                key={post.id}
-                href={post.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative flex-shrink-0 w-[140px] md:w-auto overflow-hidden rounded-xl aspect-square"
-              >
+        {/* scrollable strip on mobile; full-bleed feed-like grid at md+ */}
+        <div className="flex gap-2 overflow-x-auto pb-2 px-4 sm:px-6 md:px-0 md:pb-0 md:overflow-visible md:grid md:grid-cols-6 md:gap-1 scrollbar-none">
+          {instagramPosts.map((post) => (
+            <a
+              key={post.id}
+              href={post.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative flex-shrink-0 w-[140px] md:w-auto overflow-hidden rounded-xl md:rounded-none aspect-square"
+            >
                 <Image
                   src={post.image}
                   alt={post.alt}
@@ -550,9 +592,8 @@ export default async function HomePage() {
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
                   </svg>
                 </div>
-              </a>
-            ))}
-          </div>
+            </a>
+          ))}
         </div>
       </section>
     </>

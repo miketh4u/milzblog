@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { MobileMenu } from "./MobileMenu";
 import { SearchBar } from "../features/SearchBar";
@@ -16,6 +17,7 @@ const navLinks = [
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -23,14 +25,20 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link href="/" className="text-2xl md:text-3xl font-semibold text-[var(--color-primary)] tracking-tight" style={{ fontFamily: "var(--font-cormorant)" }}>
+            <Link href="/" className="whitespace-nowrap text-[clamp(20px,2vw,28px)] font-semibold text-[var(--color-primary)] tracking-tight" style={{ fontFamily: "var(--font-cormorant)" }}>
               milz on the move
             </Link>
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-6 lg:gap-8">
               {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors">
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors after:absolute after:inset-x-0 after:-bottom-1.5 after:h-[1.5px] after:bg-[var(--color-accent)] after:origin-left after:transition-transform after:duration-[250ms] after:ease-out hover:after:scale-x-100 ${
+                    pathname?.startsWith(link.href) ? "after:scale-x-100 text-[var(--color-primary)]" : "after:scale-x-0"
+                  }`}
+                >
                   {link.label}
                 </Link>
               ))}

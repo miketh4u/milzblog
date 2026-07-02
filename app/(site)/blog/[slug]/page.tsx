@@ -4,13 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { safeFetch } from "@/sanity/lib/client";
-import { postBySlugQuery, relatedPostsQuery } from "@/sanity/lib/queries";
+import { adjacentPostsQuery, postBySlugQuery, relatedPostsQuery } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
 import { portableTextComponents } from "@/components/blocks/PortableTextComponents";
 import { SponsoredBanner } from "@/components/ui/SponsoredBanner";
 import { RelatedPosts } from "@/components/ui/RelatedPosts";
 import { NewsletterInline } from "@/components/ui/NewsletterInline";
 import { SocialShareBar } from "@/components/ui/SocialShareBar";
+import { ReadingProgress } from "@/components/ui/ReadingProgress";
+import { AuthorBio, Monogram } from "@/components/ui/AuthorBio";
 import { generatePostMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
 import type { Post, PostCard } from "@/types";
@@ -37,11 +39,19 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await safeFetch<Post | null>(postBySlugQuery, { slug }, null);
   if (!post) notFound();
 
-  const relatedPosts = await safeFetch<PostCard[]>(relatedPostsQuery, {
-    slug: post.slug.current,
-    countryId: post.country?._id || "",
-    categoryId: post.category?._id || "",
-  }, []);
+  type AdjacentPost = { title: string; slug: { current: string } } | null;
+  const [relatedPosts, adjacent] = await Promise.all([
+    safeFetch<PostCard[]>(relatedPostsQuery, {
+      slug: post.slug.current,
+      countryId: post.country?._id || "",
+      categoryId: post.category?._id || "",
+    }, []),
+    safeFetch<{ prev: AdjacentPost; next: AdjacentPost }>(
+      adjacentPostsQuery,
+      { publishedAt: post.publishedAt },
+      { prev: null, next: null },
+    ),
+  ]);
 
   const heroUrl = post.featuredImage
     ? urlFor(post.featuredImage).width(1600).height(900).fit("crop").auto("format").url()
@@ -52,6 +62,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <ReadingProgress />
       {/* Hero */}
       <div className="relative h-[60vh] md:h-[70vh] bg-[var(--color-primary)] overflow-hidden">
         {heroUrl && (
@@ -68,31 +79,37 @@ export default async function BlogPostPage({ params }: Props) {
             <h1 className="text-3xl md:text-5xl font-semibold text-white leading-snug mb-4" style={{ fontFamily: "var(--font-cormorant)" }}>
               {post.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-3 text-white/70 text-sm">
-              <span>{formatDate(post.publishedAt)}</span>
-              {post.readingTime && <><span>·</span><span>{post.readingTime} min read</span></>}
-              {post.country && (
-                <>
-                  <span>·</span>
-                  <Link
-                    href={`/destinations/${post.country.slug.current}`}
-                    className="hover:text-white transition-colors underline-offset-4 hover:underline"
-                  >
-                    {post.country.name}
-                  </Link>
-                </>
-              )}
-              {post.city && post.country && (
-                <>
-                  <span>·</span>
-                  <Link
-                    href={`/destinations/${post.country.slug.current}/${post.city.slug.current}`}
-                    className="hover:text-white transition-colors underline-offset-4 hover:underline"
-                  >
-                    {post.city.name}
-                  </Link>
-                </>
-              )}
+            <div className="flex items-center gap-3">
+              <Monogram size={40} />
+              <div>
+                <div className="text-sm font-semibold text-white">By Milz</div>
+                <div className="flex flex-wrap items-center gap-2 text-[13px] text-white/70">
+                  <span>{formatDate(post.publishedAt)}</span>
+                  {post.readingTime && <><span>·</span><span>{post.readingTime} min read</span></>}
+                  {post.country && (
+                    <>
+                      <span>·</span>
+                      <Link
+                        href={`/destinations/${post.country.slug.current}`}
+                        className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                      >
+                        {post.country.name}
+                      </Link>
+                    </>
+                  )}
+                  {post.city && post.country && (
+                    <>
+                      <span>·</span>
+                      <Link
+                        href={`/destinations/${post.country.slug.current}/${post.city.slug.current}`}
+                        className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                      >
+                        {post.city.name}
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -125,7 +142,44 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         )}
 
+        <AuthorBio />
+
         <RelatedPosts posts={relatedPosts} />
+
+        {(adjacent.prev || adjacent.next) && (
+          <nav aria-label="Adjacent posts" className="mt-14 border-t border-[var(--color-border)] pt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              {adjacent.prev && (
+                <Link href={`/blog/${adjacent.prev.slug.current}`} className="group block">
+                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-text-muted)] mb-2">
+                    ← Previous
+                  </div>
+                  <div
+                    className="text-lg font-semibold leading-snug text-[var(--color-primary)] group-hover:text-[var(--color-accent)] transition-colors"
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                  >
+                    {adjacent.prev.title}
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div className="sm:text-right">
+              {adjacent.next && (
+                <Link href={`/blog/${adjacent.next.slug.current}`} className="group block">
+                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-text-muted)] mb-2">
+                    Next →
+                  </div>
+                  <div
+                    className="text-lg font-semibold leading-snug text-[var(--color-primary)] group-hover:text-[var(--color-accent)] transition-colors"
+                    style={{ fontFamily: "var(--font-cormorant)" }}
+                  >
+                    {adjacent.next.title}
+                  </div>
+                </Link>
+              )}
+            </div>
+          </nav>
+        )}
       </div>
 
       <SocialShareBar url={postUrl} title={post.title} imageUrl={heroUrl || ""} />
