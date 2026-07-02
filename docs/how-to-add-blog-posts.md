@@ -47,7 +47,7 @@ The article itself. It's a rich-text editor — type normally and use the toolba
 
 - **Image** — a photo inside the article, with optional caption.
 - **Pull Quote** — a big styled quote to break up long text.
-- **YouTube Video** — paste just the **video ID** (the part after `watch?v=` in a YouTube link, e.g. `dQw4w9WgXcQ`), not the whole URL.
+- **YouTube Video** — paste the YouTube link (any format — watch, share, or Shorts link) or just the video ID.
 - **Affiliate Product** — a product card with name, your affiliate link, a product photo, and price (e.g. `$39`).
 
 ### Category
